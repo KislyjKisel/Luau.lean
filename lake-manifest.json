@@ -1,0 +1,14 @@
+{"version": 7,
+ "packagesDir": ".lake/packages",
+ "packages":
+ [{"url": "https://github.com/KislyjKisel/lean-pod",
+   "type": "git",
+   "subDir": null,
+   "rev": "24fe21da4132290eddacb60ff645feda923fdc8b",
+   "name": "pod",
+   "manifestFile": "lake-manifest.json",
+   "inputRev": "24fe21d",
+   "inherited": false,
+   "configFile": "lakefile.lean"}],
+ "name": "luau",
+ "lakeDir": ".lake"}
