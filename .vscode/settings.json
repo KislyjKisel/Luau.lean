@@ -1,0 +1,9 @@
+{
+    "C_Cpp.default.includePath": [
+        "~/.elan/toolchains/stable/include",
+        "luau/VM/include",
+        "luau/Compiler/include",
+        ".lake/packages/pod/src/native/include",
+        "ffi/include",
+    ]
+}
