@@ -16,6 +16,7 @@ require pod from git "https://github.com/KislyjKisel/lean-pod" @ "24fe21d"
 package luau where
   srcDir := "src"
   leanOptions := #[⟨`autoImplicit, false⟩]
+  precompileModules := true
 
 lean_lib Luau where
 
@@ -58,6 +59,8 @@ script buildLuauSubmodule do
 /-! # Bindings -/
 
 def bindingsSources := #[
+  "initialization",
+  "compile",
   "core"
 ]
 
@@ -75,9 +78,16 @@ extern_lib «luau-lean» pkg := do
     "-I", (pkg.dir / "ffi" / "include").toString
   ]
 
-  match pkg.deps.find? λ dep ↦ dep.name == `pod with
+  let podExternLib : ExternLib ←
+    match pkg.deps.find? λ dep ↦ dep.name == `pod with
     | none => error "Missing dependency 'Pod'"
-    | some pod => weakArgs := weakArgs ++ #["-I", (pod.dir / "src" / "native" / "include").toString]
+    | some pod => do
+      if h: 0 < pod.externLibs.size
+        then
+          weakArgs := weakArgs ++ #["-I", (pod.dir / "src" / "native" / "include").toString]
+          pure <| pod.externLibs.get ⟨0, h⟩
+        else
+          error "Can't find Pod's bindings"
 
   if !optionManual then
     buildLuauSubmodule' false
@@ -87,12 +97,10 @@ extern_lib «luau-lean» pkg := do
   let objectFileDir := pkg.irDir / "ffi"
   let extraTrace ← mixTraceArray <$> (bindingsExtras.mapM $ λ h ↦ computeTrace (pkg.dir / ⟨h⟩))
   buildStaticLib (pkg.nativeLibDir / name)
-    (#[].append
-      (← bindingsSources.mapM λ suffix ↦ do
+    (← bindingsSources.mapM λ suffix ↦ do
         buildO
           (objectFileDir / (suffix ++ ".o"))
           (← inputFile $ nativeSrcDir / (suffix ++ ".c"))
           weakArgs traceArgs
           optionCompilerBindings
-          (pure extraTrace)
-      ))
+          (pure extraTrace))
