@@ -35,7 +35,7 @@ def tryRunProcess {m} [Monad m] [MonadError m] [MonadLiftT IO m] (sa : IO.Proces
   else
     return output.stdout
 
-def buildLuauSubmodule' {m} [Monad m] [MonadError m] [MonadLiftT IO m] (printCmdOutput : Bool) : m Unit := do
+def buildSubmodule' {m} [Monad m] [MonadError m] [MonadLiftT IO m] (printCmdOutput : Bool) : m Unit := do
   if optionGit != "" then
     let gitOutput ← tryRunProcess {
       cmd := optionGit
@@ -51,8 +51,8 @@ def buildLuauSubmodule' {m} [Monad m] [MonadError m] [MonadLiftT IO m] (printCmd
     }
     if printCmdOutput then IO.println makeOutput
 
-script buildLuauSubmodule do
-  buildLuauSubmodule' true
+script buildSubmodule do
+  buildSubmodule' true
   return 0
 
 
@@ -73,10 +73,13 @@ extern_lib «luau-lean» pkg := do
   let mut weakArgs := #["-I", (← getLeanIncludeDir).toString]
   let mut traceArgs := optionFlagsCompileBindings.append #[
     "-fPIC",
-    "-I", (pkg.dir / "luau" / "VM" / "include").toString,
-    "-I", (pkg.dir / "luau" / "Compiler" / "include").toString,
     "-I", (pkg.dir / "ffi" / "include").toString
   ]
+  if !optionManual then
+    traceArgs := traceArgs.append #[
+      "-I", (pkg.dir / "luau" / "VM" / "include").toString,
+      "-I", (pkg.dir / "luau" / "Compiler" / "include").toString
+    ]
 
   let podExternLib : ExternLib ←
     match pkg.deps.find? λ dep ↦ dep.name == `pod with
@@ -90,7 +93,7 @@ extern_lib «luau-lean» pkg := do
           error "Can't find Pod's bindings"
 
   if !optionManual then
-    buildLuauSubmodule' false
+    buildSubmodule' false
     pure ()
 
   let nativeSrcDir := pkg.dir / "ffi"
