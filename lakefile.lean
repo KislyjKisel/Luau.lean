@@ -4,14 +4,16 @@ open Lake DSL
 def splitArgStr (s : String) : Array String :=
   Array.mk $ s.splitOn.filter $ not ∘ String.isEmpty
 
-def optionCompilerBindings := get_config? bindings_cc |>.getD "cc"
-def optionFlagsCompileBindings := get_config? bindings_cflags |>.getD "" |> splitArgStr
+def optionBindingsCompiler := get_config? bindings_cc |>.getD "cc"
+def optionBindingsCompilerFlags := get_config? bindings_cflags |>.getD "" |> splitArgStr
 def optionManual := get_config? manual |>.isSome
 def optionGit := get_config? git |>.getD "git"
-def optionMake := get_config? make |>.getD "make"
+def optionCMake := get_config? cmake |>.getD "cmake"
 def optionLuauFlags := get_config? luau_flags |>.getD "" |> splitArgStr
+def optionLuauCCompiler := get_config? luau_cc |>.getD "cc"
+def optionLuauCppCompiler := get_config? luau_cxx |>.getD "clang++"
 
-require pod from git "https://github.com/KislyjKisel/lean-pod" @ "24fe21d"
+require pod from git "https://github.com/KislyjKisel/lean-pod" @ "715beec"
 
 package luau where
   srcDir := "src"
@@ -23,7 +25,10 @@ lean_lib Luau where
 @[default_target]
 lean_exe «luau-test» where
   root := `Main
-  moreLinkArgs := cond optionManual #[] #[s!"-L{__dir__}/luau/build/release/", "-lluauvm"]
+  moreLinkArgs :=
+    cond optionManual
+      #[]
+      #[s!"-L{__dir__}/luau/build/", "-lLuau.VM", "-lLuau.Compiler", "-lLuau.Ast"]
 
 
 /-! # Submodule -/
@@ -43,13 +48,39 @@ def buildSubmodule' {m} [Monad m] [MonadError m] [MonadLiftT IO m] (printCmdOutp
       cwd := __dir__
     }
     if printCmdOutput then IO.println gitOutput
-  if optionMake != "" then
+
+  let mkdirOutput ← tryRunProcess {
+    cmd := "mkdir"
+    args := #["-p", "luau/build"]
+    cwd := __dir__
+  }
+  if printCmdOutput then IO.println mkdirOutput
+
+  if optionCMake != "" then
     let makeOutput ← tryRunProcess {
-      cmd := optionMake
-      args := #["config=release", "luau"].append optionLuauFlags
-      cwd := __dir__ / "luau"
+      cmd := optionCMake
+      args := #[
+        s!"-DCMAKE_CXX_COMPILER={optionLuauCppCompiler}",
+        "-DCMAKE_CXX_FLAGS=-stdlib=libc++",
+        s!"-DCMAKE_C_COMPILER={optionLuauCCompiler}",
+        "-DCMAKE_POSITION_INDEPENDENT_CODE=ON",
+        "-DLUAU_EXTERN_C=ON",
+        "-DLUAU_BUILD_CLI=OFF",
+        "-DLUAU_BUILD_TESTS=OFF",
+        "-DLUAU_BUILD_WEB=OFF",
+        "-DCMAKE_BUILD_TYPE=Release",
+        ".."
+      ].append optionLuauFlags
+      cwd := __dir__ / "luau" / "build"
+      -- env := #[("LD_LIBRARY_PATH", none)]
     }
     if printCmdOutput then IO.println makeOutput
+    let cmakeBuildOutput ← tryRunProcess {
+      cmd := optionCMake
+      args := #["--build", ".", "--target", "Luau.VM", "Luau.Compiler"]
+      cwd := __dir__ / "luau" / "build"
+    }
+    if printCmdOutput then IO.println cmakeBuildOutput
 
 script buildSubmodule do
   buildSubmodule' true
@@ -71,7 +102,7 @@ def bindingsExtras : Array String := #[
 extern_lib «luau-lean» pkg := do
   let name := nameToStaticLib "luau-lean"
   let mut weakArgs := #["-I", (← getLeanIncludeDir).toString]
-  let mut traceArgs := optionFlagsCompileBindings.append #[
+  let mut traceArgs := optionBindingsCompilerFlags.append #[
     "-fPIC",
     "-I", (pkg.dir / "ffi" / "include").toString
   ]
@@ -81,20 +112,18 @@ extern_lib «luau-lean» pkg := do
       "-I", (pkg.dir / "luau" / "Compiler" / "include").toString
     ]
 
-  let podExternLib : ExternLib ←
-    match pkg.deps.find? λ dep ↦ dep.name == `pod with
-    | none => error "Missing dependency 'Pod'"
-    | some pod => do
-      if h: 0 < pod.externLibs.size
-        then
-          weakArgs := weakArgs ++ #["-I", (pod.dir / "src" / "native" / "include").toString]
-          pure <| pod.externLibs.get ⟨0, h⟩
-        else
-          error "Can't find Pod's bindings"
+  match pkg.deps.find? λ dep ↦ dep.name == `pod with
+  | none => error "Missing dependency 'Pod'"
+  | some pod => do
+    if h: 0 < pod.externLibs.size
+      then
+        weakArgs := weakArgs ++ #["-I", (pod.dir / "src" / "native" / "include").toString]
+        pure <| pod.externLibs.get ⟨0, h⟩
+      else
+        error "Can't find Pod's bindings"
 
   if !optionManual then
     buildSubmodule' false
-    pure ()
 
   let nativeSrcDir := pkg.dir / "ffi"
   let objectFileDir := pkg.irDir / "ffi"
@@ -103,7 +132,7 @@ extern_lib «luau-lean» pkg := do
     (← bindingsSources.mapM λ suffix ↦ do
         buildO
           (objectFileDir / (suffix ++ ".o"))
-          (← inputFile $ nativeSrcDir / (suffix ++ ".c"))
+          (← inputTextFile $ nativeSrcDir / (suffix ++ ".c"))
           weakArgs traceArgs
-          optionCompilerBindings
+          optionBindingsCompiler
           (pure extraTrace))
