@@ -50,6 +50,7 @@ char* luau_compile(const char* source, size_t size, lua_CompileOptions* options,
 
 // End of copy pasted segment
 
+
 typedef struct {
     lua_CompileOptions options;
     lean_object* owner;
@@ -65,3 +66,12 @@ LEAN_POD_DECLARE_EXTERNAL_CLASS(luau_CompileOptions, lean_luau_CompileOptions_da
 #define LEAN_LUAU_CompileOptions_COVLVL(v) LEAN_POD_CTOR_GET_U8(LEAN_LUAU_LAYOUT_CompileOptions, v, 3)
 #define LEAN_LUAU_CompileOptions_MUTGLB(v) LEAN_POD_CTOR_GET_BOX(LEAN_LUAU_LAYOUT_CompileOptions, v, 0)
 #define LEAN_LUAU_CompileOptions_USRTYS(v) LEAN_POD_CTOR_GET_BOX(LEAN_LUAU_LAYOUT_CompileOptions, v, 1)
+
+typedef struct lua_State lua_State;
+
+typedef struct {
+    lua_State* state; // NULL = closed
+    bool isInterpreter;
+} lean_luau_State_data;
+
+LEAN_POD_DECLARE_EXTERNAL_CLASS(luau_State, lean_luau_State_data*)

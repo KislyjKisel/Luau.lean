@@ -81,6 +81,8 @@ Keeps a reference to the original object.
 @[extern "lean_luau_CompileOptions_bake"]
 opaque CompileOptions.bake (raw : CompileOptions) : CompileOptions'
 
+abbrev CompileOptions'.ofRaw := CompileOptions.bake
+
 /--
 Compile source to bytecode.
 When source compilation fails, the resulting bytecode contains the encoded error.

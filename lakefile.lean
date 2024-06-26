@@ -91,6 +91,7 @@ script buildSubmodule do
 
 def bindingsSources := #[
   "initialization",
+  "config",
   "compile",
   "core"
 ]
