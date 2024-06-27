@@ -72,6 +72,9 @@ typedef struct lua_State lua_State;
 typedef struct {
     lua_State* state; // NULL = closed
     bool isInterpreter;
+    lean_object** referenced;
+    size_t referencedCount;
+    size_t referencedCapacity;
 } lean_luau_State_data;
 
 LEAN_POD_DECLARE_EXTERNAL_CLASS(luau_State, lean_luau_State_data*)

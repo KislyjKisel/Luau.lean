@@ -21,8 +21,14 @@ static void lean_luau_CompileOptions_foreach(void* data, b_lean_obj_arg f) {
 
 static void lean_luau_State_finalize(void* data) {
     lean_luau_State_data* data_ = data;
-    if (data_->state != NULL && data_->isInterpreter) {
-        lua_close(data_->state);
+    if (data_->state != NULL) {
+        for (size_t i = 0; i < data_->referencedCount; ++i) {
+            lean_dec(data_->referenced[i]);
+        }
+        free(data_->referenced);
+        if (data_->isInterpreter) {
+            lua_close(data_->state);
+        }
     }
     lean_pod_free(data_);
 }
@@ -30,6 +36,11 @@ static void lean_luau_State_finalize(void* data) {
 static void lean_luau_State_foreach(void* data, b_lean_obj_arg f) {
     lean_luau_State_data* data_ = data;
     if (data_->state == NULL) return;
+    lean_inc_ref_n(f, data_->referencedCount);
+    for (size_t i = 0; i < data_->referencedCount; ++i) {
+        lean_inc(data_->referenced[i]);
+        lean_apply_1(f, data_->referenced[i]);
+    }
 }
 
 LEAN_EXPORT lean_obj_res lean_luau_initialize(lean_obj_arg io_) {
