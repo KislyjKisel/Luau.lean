@@ -30,7 +30,7 @@ inductive Status where
 | errErr
 /-- Yielded for a debug breakpoint -/
 | break
-deriving Repr, Inhabited
+deriving Repr, Inhabited, DecidableEq
 
 inductive CoStatus where
 /-- Running -/
@@ -43,7 +43,7 @@ inductive CoStatus where
 | fin
 /-- Finished with error -/
 | err
-deriving Repr, Inhabited
+deriving Repr, Inhabited, DecidableEq
 
 /-- Lua interpreter or a thread -/
 define_foreign_type State
@@ -67,7 +67,10 @@ inductive «Type» where
 | userdata
 | thread
 | buffer
-deriving Repr, Inhabited
+deriving Repr, Inhabited, DecidableEq
+
+def «Type».toInt32 (ty : «Type») : Int32 :=
+  Pod.Int32.ofUInt32 $ UInt32.ofNat ty.toCtorIdx
 
 -- TODO: GCObject(?) Type with extra values
 
@@ -145,7 +148,50 @@ opaque xpush («from» to : @& State) (idx : Int32) : IO Unit
 
 /-! # Access functions -/
 
--- TODO
+@[extern "lean_luau_State_isNumber"]
+opaque isNumber (state : @& State) (idx : Int32) : IO Bool
+
+@[extern "lean_luau_State_isString"]
+opaque isString (state : @& State) (idx : Int32) : IO Bool
+
+@[extern "lean_luau_State_isCFunction"]
+opaque isCFunction (state : @& State) (idx : Int32) : IO Bool
+
+@[extern "lean_luau_State_isLFunction"]
+opaque isLFunction (state : @& State) (idx : Int32) : IO Bool
+
+@[extern "lean_luau_State_isUserdata"]
+opaque isUserdata (state : @& State) (idx : Int32) : IO Bool
+
+@[extern "lean_luau_State_type"]
+opaque type (state : @& State) (idx : Int32) : IO (Option «Type»)
+
+@[extern "lean_luau_State_typeName"]
+opaque typeName (state : @& State) (tp : «Type») : IO String
+
+def typeName' (state : State) (tp : Int32) : IO String :=
+  if tp == tNone
+    then pure "no value"
+    else state.typeName (.ofNat tp.val.toNat)
+
+/--
+Returns `true` if the two values in acceptable indices `idx1` and `idx2` are equal,
+following the semantics of the Lua `==` operator (that is, may call metamethods).
+Otherwise returns `false`. Also returns `false` if any of the indices is non valid.
+-/
+@[extern "lean_luau_State_equal"]
+opaque equal (state : @& State) (idx1 idx2 : Int32) : IO Bool
+
+/--
+Returns `true` if the two values in acceptable indices `idx1` and `idx2` are primitively equal
+(that is, without calling metamethods).
+Otherwise returns `false`. Also returns `false` if any of the indices are non valid.
+-/
+@[extern "lean_luau_State_rawEqual"]
+opaque rawEqual (state : @& State) (idx1 idx2 : Int32) : IO Bool
+
+@[extern "lean_luau_State_lessThan"]
+opaque lessThan (state : @& State) (idx1 idx2 : Int32) : IO Bool
 
 
 /-! # Push functions -/
