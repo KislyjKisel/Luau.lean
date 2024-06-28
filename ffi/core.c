@@ -271,6 +271,66 @@ LEAN_EXPORT lean_obj_res lean_luau_State_isUserdata(lean_luau_State state, uint3
     return lean_io_result_mk_ok(lean_box(lua_isuserdata(data->state, (int32_t)idx) != 0));
 }
 
+LEAN_EXPORT lean_obj_res lean_luau_State_isFunction(lean_luau_State state, uint32_t idx, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box(lua_isfunction(data->state, (int32_t)idx) != 0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_isTable(lean_luau_State state, uint32_t idx, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box(lua_istable(data->state, (int32_t)idx) != 0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_isLightUserdata(lean_luau_State state, uint32_t idx, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box(lua_islightuserdata(data->state, (int32_t)idx) != 0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_isNil(lean_luau_State state, uint32_t idx, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box(lua_isnil(data->state, (int32_t)idx) != 0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_isBoolean(lean_luau_State state, uint32_t idx, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box(lua_isboolean(data->state, (int32_t)idx) != 0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_isVector(lean_luau_State state, uint32_t idx, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box(lua_isvector(data->state, (int32_t)idx) != 0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_isThread(lean_luau_State state, uint32_t idx, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box(lua_isthread(data->state, (int32_t)idx) != 0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_isBuffer(lean_luau_State state, uint32_t idx, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box(lua_isbuffer(data->state, (int32_t)idx) != 0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_isNone(lean_luau_State state, uint32_t idx, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box(lua_isnone(data->state, (int32_t)idx) != 0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_isNoneOrNil(lean_luau_State state, uint32_t idx, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box(lua_isnoneornil(data->state, (int32_t)idx) != 0));
+}
+
 LEAN_EXPORT lean_obj_res lean_luau_State_type(lean_luau_State state, uint32_t idx, lean_obj_arg io_) {
     lean_luau_State_data* data = lean_luau_State_fromRepr(state);
     lean_luau_guard_valid(data);
@@ -675,8 +735,126 @@ LEAN_EXPORT lean_obj_res lean_luau_State_pushCClosure(lean_luau_State state, lea
 
 // Get functions
 
+LEAN_EXPORT lean_obj_res lean_luau_State_getTable(lean_luau_State state, uint32_t idx, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box(lua_gettable(data->state, (int32_t)idx)));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_getField(lean_luau_State state, uint32_t idx, b_lean_obj_arg k, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box(lua_getfield(data->state, (int32_t)idx, lean_string_cstr(k))));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_rawGetField(lean_luau_State state, uint32_t idx, b_lean_obj_arg k, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box(lua_rawgetfield(data->state, (int32_t)idx, lean_string_cstr(k))));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_rawGet(lean_luau_State state, uint32_t idx, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box(lua_rawget(data->state, (int32_t)idx)));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_rawGetI(lean_luau_State state, uint32_t idx, uint32_t n, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box(lua_rawgeti(data->state, (int32_t)idx, (int32_t)n)));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_createTable(lean_luau_State state, uint32_t narr, uint32_t nrec, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    lua_createtable(data->state, (int32_t)narr, (int32_t)nrec);
+    return lean_io_result_mk_ok(lean_box(0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_setReadonly(lean_luau_State state, uint32_t idx, uint8_t enabled, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    lua_setreadonly(data->state, (int32_t)idx, enabled);
+    return lean_io_result_mk_ok(lean_box(0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_getReadonly(lean_luau_State state, uint32_t idx, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box(lua_getreadonly(data->state, (int32_t)idx) != 0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_setSafeEnv(lean_luau_State state, uint32_t idx, uint8_t enabled, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    lua_setsafeenv(data->state, (int32_t)idx, enabled);
+    return lean_io_result_mk_ok(lean_box(0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_getMetatable(lean_luau_State state, uint32_t objindex, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box(lua_getmetatable(data->state, (int32_t)objindex) != 0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_getFEnv(lean_luau_State state, uint32_t idx, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    lua_getfenv(data->state, (int32_t)idx);
+    return lean_io_result_mk_ok(lean_box(0));
+}
+
 
 // Set functions
+
+LEAN_EXPORT lean_obj_res lean_luau_State_setTable(lean_luau_State state, uint32_t idx, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    lua_settable(data->state, (int32_t)idx);
+    return lean_io_result_mk_ok(lean_box(0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_setField(lean_luau_State state, uint32_t idx, b_lean_obj_arg k, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    lua_setfield(data->state, (int32_t)idx, lean_string_cstr(k));
+    return lean_io_result_mk_ok(lean_box(0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_rawSetField(lean_luau_State state, uint32_t idx, b_lean_obj_arg k, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    lua_rawsetfield(data->state, (int32_t)idx, lean_string_cstr(k));
+    return lean_io_result_mk_ok(lean_box(0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_rawSet(lean_luau_State state, uint32_t idx, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    lua_rawset(data->state, (int32_t)idx);
+    return lean_io_result_mk_ok(lean_box(0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_rawSetI(lean_luau_State state, uint32_t idx, uint32_t n, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    lua_rawseti(data->state, (int32_t)idx, (int32_t)n);
+    return lean_io_result_mk_ok(lean_box(0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_setMetatable(lean_luau_State state, uint32_t objindex, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    lua_setmetatable(data->state, (int32_t)objindex);
+    return lean_io_result_mk_ok(lean_box(0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_setFEnv(lean_luau_State state, uint32_t idx, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box(lua_setfenv(data->state, (int32_t)idx) != 0));
+}
 
 
 // Load and call functions
@@ -711,7 +889,129 @@ LEAN_EXPORT lean_obj_res lean_luau_State_pcall(lean_luau_State state, uint32_t n
     ));
 }
 
+
+// Coroutine functions
+
+LEAN_EXPORT lean_obj_res lean_luau_State_yield(lean_luau_State state, uint32_t nArgs, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box_uint32((int32_t)
+        lua_yield(data->state, (int32_t)nArgs)
+    ));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_break(lean_luau_State state, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box_uint32((int32_t)lua_break(data->state)));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_resume(lean_luau_State state, lean_luau_State from, uint32_t narg, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    lua_State* from_c = NULL;
+    if (lean_option_is_some(from)) {
+        lean_luau_State_data* from_data = lean_luau_State_unbox(lean_ctor_get(from, 0));
+        lean_luau_guard_valid(from_data);
+        from_c = from_data->state;
+    }
+    return lean_io_result_mk_ok(lean_box(
+        lua_resume(data->state, from_c, (int32_t)narg)
+    ));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_resumeError(lean_luau_State state, lean_luau_State from, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    lua_State* from_c = NULL;
+    if (lean_option_is_some(from)) {
+        lean_luau_State_data* from_data = lean_luau_State_unbox(lean_ctor_get(from, 0));
+        lean_luau_guard_valid(from_data);
+        from_c = from_data->state;
+    }
+    return lean_io_result_mk_ok(lean_box(lua_resumeerror(data->state, from_c)));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_status(lean_luau_State state, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box(lua_status(data->state)));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_isYieldable(lean_luau_State state, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box(lua_isyieldable(data->state) != 0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_coStatus(lean_luau_State state, lean_luau_State co, lean_obj_arg io_) {
+    lean_luau_State_data* data1 = lean_luau_State_fromRepr(state);
+    lean_luau_State_data* data2 = lean_luau_State_fromRepr(co);
+    lean_luau_guard_valid(data1);
+    lean_luau_guard_valid(data2);
+    return lean_io_result_mk_ok(lean_box(lua_costatus(data1->state, data2->state)));
+}
+
+
+// GC functions and options
+
+LEAN_EXPORT lean_obj_res lean_luau_State_gc(lean_luau_State state, uint8_t what, uint32_t arg, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box_uint32((int32_t)lua_gc(data->state, what, (int32_t)arg)));
+}
+
+
+// Memory statistics
+
+LEAN_EXPORT lean_obj_res lean_luau_State_setMemCat(lean_luau_State state, uint32_t category, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    lua_setmemcat(data->state, category);
+    return lean_io_result_mk_ok(lean_box(0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_totalBytes(lean_luau_State state, uint32_t category, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box_usize(lua_totalbytes(data->state, category)));
+}
+
+
 // Miscellaneous functions
+
+LEAN_EXPORT lean_obj_res lean_luau_State_error(lean_luau_State state, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    lua_error(data->state);
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_next(lean_luau_State state, uint32_t idx, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box(lua_next(data->state, (int32_t)idx) != 0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_rawIter(lean_luau_State state, uint32_t idx, uint32_t iter, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box_uint32((int32_t)
+        lua_rawiter(data->state, (int32_t)idx, (int32_t)iter)
+    ));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_concat(lean_luau_State state, uint32_t n, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    lua_concat(data->state, (int32_t)n);
+    return lean_io_result_mk_ok(lean_box(0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_clock(lean_luau_State state, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box_float(lua_clock(data->state)));
+}
 
 LEAN_EXPORT lean_obj_res lean_luau_State_setUserdataDtor(lean_luau_State state, uint32_t tag, lean_obj_arg dtor, lean_obj_arg io_) {
     lean_luau_State_data* data = lean_luau_State_fromRepr(state);
@@ -732,5 +1032,62 @@ LEAN_EXPORT lean_obj_res lean_luau_State_resetUserdataDtor(lean_luau_State state
         lean_dec_ref(dtors[tag]);
     }
     dtors[tag] = NULL;
+    return lean_io_result_mk_ok(lean_box(0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_setUserdataMetatable(lean_luau_State state, uint32_t tag, uint32_t idx, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    lua_setuserdatametatable(data->state, tag, (int32_t)idx);
+    return lean_io_result_mk_ok(lean_box(0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_getUserdataMetatable(lean_luau_State state, uint32_t tag, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    lua_getuserdatametatable(data->state, tag);
+    return lean_io_result_mk_ok(lean_box(0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_setLightUserdataName(lean_luau_State state, uint32_t tag, b_lean_obj_arg name, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    lua_setlightuserdataname(data->state, tag, lean_string_cstr(name));
+    return lean_io_result_mk_ok(lean_box(0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_getLightUserdataName(lean_luau_State state, uint32_t tag, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_mk_string(lua_getlightuserdataname(data->state, tag)));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_cloneFunction(lean_luau_State state, uint32_t idx, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    lua_clonefunction(data->state, (int32_t)idx);
+    return lean_io_result_mk_ok(lean_box(0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_clearTable(lean_luau_State state, uint32_t idx, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    lua_cleartable(data->state, (int32_t)idx);
+    return lean_io_result_mk_ok(lean_box(0));
+}
+
+
+// Reference system
+
+LEAN_EXPORT lean_obj_res lean_luau_State_ref(lean_luau_State state, uint32_t idx, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box_uint32((int32_t)lua_ref(data->state, (int32_t)idx)));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_unref(lean_luau_State state, uint32_t ref, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    lua_unref(data->state, (int32_t)ref);
     return lean_io_result_mk_ok(lean_box(0));
 }

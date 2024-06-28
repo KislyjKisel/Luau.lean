@@ -192,6 +192,36 @@ opaque isLFunction (state : @& State Uu Ut Lt) (idx : Int32) : IO Bool
 @[extern "lean_luau_State_isUserdata"]
 opaque isUserdata (state : @& State Uu Ut Lt) (idx : Int32) : IO Bool
 
+@[extern "lean_luau_State_isFunction"]
+opaque isFunction (state : @& State Uu Ut Lt) (idx : Int32) : IO Bool
+
+@[extern "lean_luau_State_isTable"]
+opaque isTable (state : @& State Uu Ut Lt) (idx : Int32) : IO Bool
+
+@[extern "lean_luau_State_isLightUserdata"]
+opaque isLightUserdata (state : @& State Uu Ut Lt) (idx : Int32) : IO Bool
+
+@[extern "lean_luau_State_isNil"]
+opaque isNil (state : @& State Uu Ut Lt) (idx : Int32) : IO Bool
+
+@[extern "lean_luau_State_isBoolean"]
+opaque isBoolean (state : @& State Uu Ut Lt) (idx : Int32) : IO Bool
+
+@[extern "lean_luau_State_isVector"]
+opaque isVector (state : @& State Uu Ut Lt) (idx : Int32) : IO Bool
+
+@[extern "lean_luau_State_isThread"]
+opaque isThread (state : @& State Uu Ut Lt) (idx : Int32) : IO Bool
+
+@[extern "lean_luau_State_isBuffer"]
+opaque isBuffer (state : @& State Uu Ut Lt) (idx : Int32) : IO Bool
+
+@[extern "lean_luau_State_isNone"]
+opaque isNone (state : @& State Uu Ut Lt) (idx : Int32) : IO Bool
+
+@[extern "lean_luau_State_isNoneOrNil"]
+opaque isNoneOrNil (state : @& State Uu Ut Lt) (idx : Int32) : IO Bool
+
 @[extern "lean_luau_State_type"]
 opaque type (state : @& State Uu Ut Lt) (idx : Int32) : IO (Option «Type»)
 
@@ -262,6 +292,10 @@ opaque toString (state : @& State Uu Ut Lt) (idx : Int32) : IO (Option String)
 
 @[extern "lean_luau_State_objLen"]
 opaque objLen (state : @& State Uu Ut Lt) (idx : Int32) : IO Int32
+
+@[inline]
+def strLen (state : State Uu Ut Lt) (idx : Int32) : IO Int32 :=
+  objLen state idx
 
 @[extern "lean_luau_State_toCFunction"]
 opaque toCFunction (state : @& State Uu Ut Lt) (idx : Int32) : IO (Option (CFunction Uu Ut Lt))
@@ -357,14 +391,91 @@ opaque newUserdataDtor (state : @& State Uu Ut Lt) (userdata : Uu) (dtor : Uu �
 opaque newBuffer (state : @& State Uu Ut Lt) {sz : @& Nat} (data : @& BytesView sz 1) : IO Unit
 
 
-/-! # Get functions -/
+/-! # Get functions (Lua -> stack) -/
 
--- TODO
+/--
+Pushes onto stack the value `t[k]`, where `t` is the value at the given index and `k` is the value on top of the stack.
+This function pops the key from the stack, pushing the resulting value in its place.
+As in Lua, the function may trigger a metamethod for the "index" event.
+Returns the type of the pushed value.
+-/
+@[extern "lean_luau_State_getTable"]
+opaque getTable (state : @& State Uu Ut Lt) (idx : Int32) : IO «Type»
+
+@[extern "lean_luau_State_getField"]
+opaque getField (state : @& State Uu Ut Lt) (idx : Int32) (k : @& String) : IO «Type»
+
+@[extern "lean_luau_State_rawGetField"]
+opaque rawGetField (state : @& State Uu Ut Lt) (idx : Int32) (k : @& String) : IO «Type»
+
+/--
+Similar to `getTable`, but does a raw access (i.e., without metamethods).
+The value at index must be a table.
+-/
+@[extern "lean_luau_State_rawGet"]
+opaque rawGet (state : @& State Uu Ut Lt) (idx : Int32) : IO «Type»
+
+@[extern "lean_luau_State_rawGetI"]
+opaque rawGetI (state : @& State Uu Ut Lt) (idx n : Int32) : IO «Type»
+
+@[extern "lean_luau_State_createTable"]
+opaque createTable (state : @& State Uu Ut Lt) (narr nrec : Int32) : IO Unit
+
+@[inline]
+def newTable (state : State Uu Ut Lt) : IO Unit :=
+  createTable state 0 0
+
+@[extern "lean_luau_State_setReadonly"]
+opaque setReadonly (state : @& State Uu Ut Lt) (idx : Int32) (enabled : Bool) : IO Unit
+
+@[extern "lean_luau_State_getReadonly"]
+opaque getReadonly (state : @& State Uu Ut Lt) (idx : Int32) : IO Bool
+
+@[extern "lean_luau_State_setSafeEnv"]
+opaque setSafeEnv (state : @& State Uu Ut Lt) (idx : Int32) (enabled : Bool) : IO Unit
+
+@[extern "lean_luau_State_getMetatable"]
+opaque getMetatable (state : @& State Uu Ut Lt) (objindex : Int32) : IO Bool
+
+@[extern "lean_luau_State_getFEnv"]
+opaque getFEnv (state : @& State Uu Ut Lt) (idx : Int32) : IO Unit
+
+@[inline]
+def getGlobal (state : @& State Uu Ut Lt) (k : @& String) : IO «Type» :=
+  getField state globalsIndex k
 
 
-/-! # Set functions -/
+/-! # Set functions (stack -> Lua) -/
 
--- TODO
+@[extern "lean_luau_State_setTable"]
+opaque setTable (state : @& State Uu Ut Lt) (idx : Int32) : IO Unit
+
+@[extern "lean_luau_State_setField"]
+opaque setField (state : @& State Uu Ut Lt) (idx : Int32) (k : @& String) : IO Unit
+
+@[extern "lean_luau_State_rawSetField"]
+opaque rawSetField (state : @& State Uu Ut Lt) (idx : Int32) (k : @& String) : IO Unit
+
+@[extern "lean_luau_State_rawSet"]
+opaque rawSet (state : @& State Uu Ut Lt) (idx : Int32) : IO Unit
+
+@[extern "lean_luau_State_rawSetI"]
+opaque rawSetI (state : @& State Uu Ut Lt) (idx n : Int32) : IO Unit
+
+/--
+Pops a table or `nil` from the stack and sets that value as the new metatable
+for the value at the given index.
+(`nil` means no metatable)
+-/
+@[extern "lean_luau_State_setMetatable"]
+opaque setMetatable (state : @& State Uu Ut Lt) (objindex : Int32) : IO Unit
+
+@[extern "lean_luau_State_setFEnv"]
+opaque setFEnv (state : @& State Uu Ut Lt) (idx : Int32) : IO Bool
+
+@[inline]
+def setGlobal (state : State Uu Ut Lt) (k : String) : IO Unit :=
+  setField state globalsIndex k
 
 
 /-! # Load and call functions -/
@@ -381,20 +492,96 @@ opaque pcall (state : @& State Uu Ut Lt) (nArgs nResults errFunc : Int32) : IO I
 
 /-! # Coroutine functions -/
 
--- TODO
+@[extern "lean_luau_State_yield"]
+opaque yield (state : @& State Uu Ut Lt) (nargs : Int32) : IO Int32
+
+@[extern "lean_luau_State_break"]
+opaque «break» (state : @& State Uu Ut Lt) : IO Int32
+
+@[extern "lean_luau_State_resume"]
+opaque resume (state : @& State Uu Ut Lt) («from» : @& Option (State Uu Ut Lt)) (narg : Int32) : IO Status
+
+@[extern "lean_luau_State_resumeError"]
+opaque resumeError (state : @& State Uu Ut Lt) («from» : @& Option (State Uu Ut Lt)) : IO Status
+
+@[extern "lean_luau_State_status"]
+opaque status (state : @& State Uu Ut Lt) (idx : Int32) : IO Status
+
+@[extern "lean_luau_State_isYieldable"]
+opaque isYieldable (state : @& State Uu Ut Lt) : IO Bool
+
+-- TODO: getThreadUserdata setThreadUserdata
+
+@[extern "lean_luau_State_coStatus"]
+opaque coStatus (state co : @& State Uu Ut Lt) : IO CoStatus
+
 
 
 /-! # GC functions and options -/
 
--- TODO
+inductive GCOp where
+/-- Stop incremental garbage collection -/
+| stop
+/-- Resume incremental garbage collection -/
+| restart
+/-- Run a full GC cycle; not recommended for latency sensitive applications -/
+| collect
+/-- Return the heap size in KB -/
+| count
+/-- Return the heap size KB remainder in bytes -/
+| countB
+/-- Return `1` if the GC is active (not stopped); note that GC may not be actively collecting even if it's running -/
+| isRunning
+/-- Perform an explicit GC step, with the step size specified in KB -/
+| step
+/-- Tune GC parameters: G (goal) -/
+| setGoal
+/-- Tune GC parameters: S (step multiplier) -/
+| setStepMul
+/-- Tune GC parameters: step size (usually best left ignored) -/
+| setStepSize
+deriving Repr, Inhabited, DecidableEq
+
+@[extern "lean_luau_State_gc"]
+opaque gc (state : @& State Uu Ut Lt) (what : GCOp) (data : Int32) : IO Int32
+
+@[inline]
+def gcStop (state : State Uu Ut Lt) : IO Unit := gc state .stop 0 *> pure ()
+
+@[inline]
+def gcRestart (state : State Uu Ut Lt) : IO Unit := gc state .restart 0 *> pure ()
+
+@[inline]
+def gcCollect (state : State Uu Ut Lt) : IO Unit := gc state .collect 0 *> pure ()
 
 
 /-! # Memory statistics -/
 
--- TODO
+@[extern "lean_luau_State_setMemCat"]
+opaque setMemCat (state : @& State Uu Ut Lt) (category : UInt32) : IO Unit
+
+@[extern "lean_luau_State_totalBytes"]
+opaque totalBytes (state : @& State Uu Ut Lt) (category : UInt32) : IO USize
 
 
 /-! # Miscellaneous functions -/
+
+@[extern "lean_luau_State_error"]
+opaque error (state : @& State Uu Ut Lt) : IO Empty
+
+@[extern "lean_luau_State_next"]
+opaque next (state : @& State Uu Ut Lt) : IO Bool
+
+@[extern "lean_luau_State_rawIter"]
+opaque rawIter (state : @& State Uu Ut Lt) (idx iter : Int32) : IO Int32
+
+@[extern "lean_luau_State_concat"]
+opaque concat (state : @& State Uu Ut Lt) (n : Int32) : IO Unit
+
+@[extern "lean_luau_State_clock"]
+opaque clock (state : @& State Uu Ut Lt) : IO Float
+
+-- Skipped setuserdatatag: tag is in the type of the userdata value
 
 @[extern "lean_luau_State_setUserdataDtor"]
 opaque setUserdataDtor (state : @& State Uu Ut Lt) (tag : Tag) (dtor : State Uu Ut Lt → Ut tag → BaseIO Unit) : IO Unit
@@ -402,12 +589,38 @@ opaque setUserdataDtor (state : @& State Uu Ut Lt) (tag : Tag) (dtor : State Uu 
 @[extern "lean_luau_State_resetUserdataDtor"]
 opaque resetUserdataDtor (state : @& State Uu Ut Lt) (tag : Tag) : IO Unit
 
--- TODO: rest
+@[extern "lean_luau_State_setUserdataMetatable"]
+opaque setUserdataMetatable (state : @& State Uu Ut Lt) (tag : Tag) (idx : Int32) : IO Unit
+
+@[extern "lean_luau_State_getUserdataMetatable"]
+opaque getUserdataMetatable (state : @& State Uu Ut Lt) (tag : Tag) : IO Unit
+
+@[extern "lean_luau_State_setLightUserdataName"]
+opaque setLightUserdataName (state : @& State Uu Ut Lt) (tag : Tag) (name : @& String) : IO Unit
+
+@[extern "lean_luau_State_getLightUserdataName"]
+opaque getLightUserdataName (state : @& State Uu Ut Lt) (tag : Tag) : IO String
+
+@[extern "lean_luau_State_cloneFunction"]
+opaque cloneFunction (state : @& State Uu Ut Lt) (idx : Int32) : IO Unit
+
+@[extern "lean_luau_State_clearTable"]
+opaque clearTable (state : @& State Uu Ut Lt) (idx : Int32) : IO Unit
 
 
 /-! # Reference system -/
 
--- TODO
+abbrev Ref := Int32
+
+def noRef : Ref := -1
+def refNil : Ref := 0
+
+@[extern "lean_luau_State_ref"]
+opaque ref (state : @& State Uu Ut Lt) (idx : Int32) : IO Ref
+
+@[extern "lean_luau_State_unref"]
+opaque unref (state : @& State Uu Ut Lt) (ref : Ref) : IO Unit
+
 
 
 /-! # Debug API -/
