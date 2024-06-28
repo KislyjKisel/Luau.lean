@@ -16,7 +16,8 @@ define_foreign_constant maxCCalls : UInt32 := "lean_luau_config_maxCCalls"
 
 define_foreign_constant bufferSize : UInt32 := "lean_luau_config_bufferSize"
 
-define_foreign_constant utagLimit : UInt32 := "lean_luau_config_utagLimit"
+-- TODO: specify from Lake
+def utagLimit : UInt32 := 128
 
 define_foreign_constant sizeClasses : UInt32 := "lean_luau_config_sizeClasses"
 

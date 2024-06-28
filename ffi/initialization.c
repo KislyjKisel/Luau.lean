@@ -22,12 +22,18 @@ static void lean_luau_CompileOptions_foreach(void* data, b_lean_obj_arg f) {
 static void lean_luau_State_finalize(void* data) {
     lean_luau_State_data* data_ = data;
     if (data_->state != NULL) {
-        for (size_t i = 0; i < data_->referencedCount; ++i) {
-            lean_dec(data_->referenced[i]);
-        }
-        free(data_->referenced);
-        if (data_->isInterpreter) {
+        if (data_->main == data_) {
             lua_close(data_->state);
+            for (size_t i = 0; i < LUA_UTAG_LIMIT; ++i) {
+                if (data_->taggedUserdataDtors[i] != NULL) {
+                    lean_dec_ref(data_->taggedUserdataDtors[i]);
+                }
+            }
+            free(data_->taggedUserdataDtors);
+            for (size_t i = 0; i < data_->referencedCount; ++i) {
+                lean_dec(data_->referenced[i]);
+            }
+            free(data_->referenced);
         }
     }
     lean_pod_free(data_);
@@ -36,10 +42,19 @@ static void lean_luau_State_finalize(void* data) {
 static void lean_luau_State_foreach(void* data, b_lean_obj_arg f) {
     lean_luau_State_data* data_ = data;
     if (data_->state == NULL) return;
-    lean_inc_ref_n(f, data_->referencedCount);
-    for (size_t i = 0; i < data_->referencedCount; ++i) {
-        lean_inc(data_->referenced[i]);
-        lean_apply_1(f, data_->referenced[i]);
+    if (data_->main == data_) {
+        lean_inc_ref_n(f, data_->referencedCount);
+        for (size_t i = 0; i < data_->referencedCount; ++i) {
+            lean_inc(data_->referenced[i]);
+            lean_apply_1(f, data_->referenced[i]);
+        }
+        for (size_t i = 0; i < LUA_UTAG_LIMIT; ++i) {
+            if (data_->taggedUserdataDtors[i] != NULL) {
+                lean_inc_ref(f);
+                lean_inc_ref(data_->taggedUserdataDtors[i]);
+                lean_apply_1(f, data_->taggedUserdataDtors[i]);
+            }
+        }
     }
 }
 

@@ -21,10 +21,6 @@ LEAN_EXPORT uint32_t lean_luau_config_bufferSize(lean_obj_arg unit_) {
     return LUA_BUFFERSIZE;
 }
 
-LEAN_EXPORT uint32_t lean_luau_config_utagLimit(lean_obj_arg unit_) {
-    return LUA_UTAG_LIMIT;
-}
-
 LEAN_EXPORT uint32_t lean_luau_config_sizeClasses(lean_obj_arg unit_) {
     return LUA_SIZECLASSES;
 }
