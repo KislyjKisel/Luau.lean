@@ -870,9 +870,9 @@ LEAN_EXPORT lean_obj_res lean_luau_State_load(
 ) {
     lean_luau_State_data* sdata = lean_luau_State_fromRepr(state);
     lean_luau_guard_valid(sdata);
-    return lean_io_result_mk_ok(lean_box_uint32((int32_t)luau_load(
+    return lean_io_result_mk_ok(lean_box(0 != luau_load(
         sdata->state,
-        lean_option_is_some(chunkName) ? lean_string_cstr(chunkName) : NULL,
+        lean_string_cstr(chunkName),
         lean_pod_BytesView_unbox(data)->ptr,
         lean_usize_of_nat(size),
         (int32_t)env)

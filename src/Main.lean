@@ -14,8 +14,11 @@ inductive Lt : Tag → Type where
 | bool (b : Bool) : Lt ⟨0, by decide⟩
 | char (c : Char) : Lt ⟨1, by decide⟩
 
+def source := "return 4 * 42.7"
+
 def main : IO Unit := do
-  let (.mk _ code) ← Luau.compile "local function hi(x) return x * 19827 end" <| .ofRaw {  }
+  let (.mk _ code) ← Luau.compile source <| .ofRaw {  }
   let state : Luau.State Uu Ut Lt ← Luau.State.new
-  IO.println s!"CODE: {code.view.toByteArray}"
-  IO.println <| ← state.load none code.view 0
+  state.tryLoad "chunky" code.view 0
+  state.call 0 1
+  IO.println <| ← state.toStringL (-1)

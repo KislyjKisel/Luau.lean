@@ -481,7 +481,7 @@ def setGlobal (state : State Uu Ut Lt) (k : String) : IO Unit :=
 /-! # Load and call functions -/
 
 @[extern "lean_luau_State_load"]
-opaque load (state : @& State Uu Ut Lt) (chunkName : @& Option String) {size : @& Nat} (data : @& BytesView size 1) (env : Int32) : IO Int32
+opaque load (state : @& State Uu Ut Lt) (chunkName : @& String) {size : @& Nat} (data : @& BytesView size 1) (env : Int32 := 0) : IO Bool
 
 @[extern "lean_luau_State_call"]
 opaque call (state : @& State Uu Ut Lt) (nArgs nResults : Int32) : IO Unit
