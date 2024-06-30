@@ -629,4 +629,16 @@ opaque unref (state : @& State Uu Ut Lt) (ref : Ref) : IO Unit
 
 /-! # Callbacks -/
 
--- TODO
+@[extern "lean_luau_State_setInterruptCallback"]
+opaque setInterruptCallback (state : @& State Uu Ut Lt) (f : State Uu Ut Lt → Int32 → BaseIO Unit) : IO Unit
+
+@[extern "lean_luau_State_resetInterruptCallback"]
+opaque resetInterruptCallback (state : @& State Uu Ut Lt) : IO Unit
+
+@[extern "lean_luau_State_setPanicCallback"]
+opaque setPanicCallback (state : @& State Uu Ut Lt) (f : State Uu Ut Lt → Int32 → BaseIO Unit) : IO Unit
+
+@[extern "lean_luau_State_resetPanicCallback"]
+opaque resetPanicCallback (state : @& State Uu Ut Lt) : IO Unit
+
+-- TODO: userthread, useratom, debug callbacks

@@ -34,6 +34,12 @@ static void lean_luau_State_finalize(void* data) {
                 lean_dec(data_->referenced[i]);
             }
             free(data_->referenced);
+            if (data_->interruptCallback != NULL) {
+                lean_dec_ref(data_->interruptCallback);
+            }
+            if (data_->panicCallback != NULL) {
+                lean_dec_ref(data_->panicCallback);
+            }
         }
     }
     lean_pod_free(data_);
@@ -54,6 +60,16 @@ static void lean_luau_State_foreach(void* data, b_lean_obj_arg f) {
                 lean_inc_ref(data_->taggedUserdataDtors[i]);
                 lean_apply_1(f, data_->taggedUserdataDtors[i]);
             }
+        }
+        if (data_->interruptCallback != NULL) {
+            lean_inc_ref(f);
+            lean_inc_ref(data_->interruptCallback);
+            lean_apply_1(f, data_->interruptCallback);
+        }
+        if (data_->panicCallback != NULL) {
+            lean_inc_ref(f);
+            lean_inc_ref(data_->panicCallback);
+            lean_apply_1(f, data_->panicCallback);
         }
     }
 }

@@ -74,10 +74,12 @@ typedef struct lean_luau_State_data lean_luau_State_data;
 struct lean_luau_State_data {
     lua_State* state; // NULL = closed
     lean_luau_State_data* main;
-    lean_object** taggedUserdataDtors; /// undefined for non-main data
-    lean_object** referenced; /// undefined for non-main data
-    size_t referencedCount; /// undefined for non-main data
-    size_t referencedCapacity; /// undefined for non-main data
+    lean_object** taggedUserdataDtors; // undefined for non-main data
+    lean_object** referenced; // undefined for non-main data
+    size_t referencedCount; // undefined for non-main data
+    size_t referencedCapacity; // undefined for non-main data
+    lean_object* interruptCallback; // undefined for non-main data, may be NULL
+    lean_object* panicCallback; // undefined for non-main data, may be NULL
 };
 
 LEAN_POD_DECLARE_EXTERNAL_CLASS(luau_State, lean_luau_State_data*)

@@ -19,6 +19,8 @@ def source := "return 4 * 42.7"
 def main : IO Unit := do
   let (.mk _ code) ← Luau.compile source <| .ofRaw {  }
   let state : Luau.State Uu Ut Lt ← Luau.State.new
+  state.setInterruptCallback λ _ gc ↦
+    (IO.println gc).toBaseIO *> pure ()
   state.tryLoad "chunky" code.view 0
   state.call 0 1
   IO.println <| ← state.toStringL (-1)

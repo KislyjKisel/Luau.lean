@@ -32,6 +32,8 @@ static lean_object* lean_luau_State_box(lua_State* state, lean_luau_State_data* 
     data->referenced = NULL;
     data->referencedCount = 0;
     data->referencedCapacity = 0;
+    data->interruptCallback = NULL;
+    data->panicCallback = NULL;
     return lean_alloc_external(lean_luau_State_class, (void*)data);
 }
 
@@ -87,7 +89,9 @@ static void* lean_luau_alloc(void* ud, void* ptr, size_t osize, size_t nsize) {
 
 LEAN_EXPORT lean_obj_res lean_luau_State_new(lean_obj_arg io_) {
     lua_State* state = lua_newstate(lean_luau_alloc, NULL);
-    return lean_io_result_mk_ok(lean_luau_State_box(state, NULL));
+    lean_object* state_obj = lean_luau_State_box(state, NULL);
+    lua_callbacks(state)->userdata = state_obj;
+    return lean_io_result_mk_ok(state_obj);
 }
 
 LEAN_EXPORT lean_obj_res lean_luau_State_close(b_lean_obj_arg state, lean_obj_arg io_) {
@@ -1097,6 +1101,80 @@ LEAN_EXPORT lean_obj_res lean_luau_State_unref(lean_luau_State state, uint32_t r
     return lean_io_result_mk_ok(lean_box(0));
 }
 
+
+// Callbacks
+
+static void lean_luau_interrupt_callback(lua_State* state, int gc) {
+    lean_luau_State_data* data = lean_luau_State_unbox(lua_callbacks(state)->userdata);
+    if (data->main == NULL || data->main->main == NULL || data->main->interruptCallback == NULL) {
+        return;
+    }
+    lean_inc_ref(data->main->interruptCallback);
+    lean_dec_ref(lean_apply_3(
+        data->main->interruptCallback,
+        lean_luau_State_box(state, data->main),
+        lean_box_uint32((int32_t)gc),
+        lean_box(0)
+    ));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_setInterruptCallback(lean_luau_State state, lean_obj_arg fn, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    if (data->interruptCallback != NULL) {
+        lean_dec_ref(data->interruptCallback);
+    }
+    data->interruptCallback = fn;
+    lua_callbacks(data->state)->interrupt = lean_luau_interrupt_callback;
+    return lean_io_result_mk_ok(lean_box(0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_resetInterruptCallback(lean_luau_State state, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    if (data->interruptCallback != NULL) {
+        lean_dec_ref(data->interruptCallback);
+        data->interruptCallback = NULL;
+    }
+    lua_callbacks(data->state)->interrupt = NULL;
+    return lean_io_result_mk_ok(lean_box(0));
+}
+
+static void lean_luau_panic_callback(lua_State* state, int errcode) {
+    lean_luau_State_data* data = lean_luau_State_unbox(lua_callbacks(state)->userdata);
+    if (data->main == NULL || data->main->main == NULL || data->main->panicCallback == NULL) {
+        return;
+    }
+    lean_inc_ref(data->main->panicCallback);
+    lean_dec_ref(lean_apply_3(
+        data->main->panicCallback,
+        lean_luau_State_box(state, data->main),
+        lean_box_uint32((int32_t)errcode),
+        lean_box(0)
+    ));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_setPanicCallback(lean_luau_State state, lean_obj_arg fn, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    if (data->panicCallback != NULL) {
+        lean_dec_ref(data->panicCallback);
+    }
+    data->panicCallback = fn;
+    lua_callbacks(data->state)->panic = lean_luau_panic_callback;
+    return lean_io_result_mk_ok(lean_box(0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_resetPanicCallback(lean_luau_State state, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    if (data->panicCallback != NULL) {
+        lean_dec_ref(data->panicCallback);
+        data->panicCallback = NULL;
+    }
+    lua_callbacks(data->state)->panic = NULL;
+    return lean_io_result_mk_ok(lean_box(0));
+}
 
 
 // luaL_*
