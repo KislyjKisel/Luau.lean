@@ -1294,6 +1294,18 @@ LEAN_EXPORT lean_obj_res lean_luau_State_optUnsigned(lean_luau_State state, uint
     return lean_io_result_mk_ok(lean_box_uint32(luaL_optunsigned(data->state, (int32_t)numArg, def)));
 }
 
+LEAN_EXPORT lean_obj_res lean_luau_State_checkInteger(lean_luau_State state, uint32_t numArg, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box_uint32(luaL_checkinteger(data->state, (int32_t)numArg)));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_optInteger(lean_luau_State state, uint32_t numArg, uint32_t def, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    return lean_io_result_mk_ok(lean_box_uint32((int32_t)luaL_optinteger(data->state, (int32_t)numArg, (int32_t)def)));
+}
+
 LEAN_EXPORT lean_obj_res lean_luau_State_checkStackL(lean_luau_State state, uint32_t sz, b_lean_obj_arg msg, lean_obj_arg io_) {
     lean_luau_State_data* data = lean_luau_State_fromRepr(state);
     lean_luau_guard_valid(data);

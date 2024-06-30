@@ -49,6 +49,12 @@ opaque checkBoolean (state : @& State Uu Ut Lt) (narg : Int32) : IO Bool
 @[extern "lean_luau_State_optBoolean"]
 opaque optBoolean (state : @& State Uu Ut Lt) (narg : Int32) («def» : Bool) : IO Bool
 
+@[extern "lean_luau_State_checkInteger"]
+opaque checkInteger (state : @& State Uu Ut Lt) (narg : Int32) : IO Integer
+
+@[extern "lean_luau_State_optInteger"]
+opaque optInteger (state : @& State Uu Ut Lt) (narg : Int32) («def» : Integer) : IO Integer
+
 @[extern "lean_luau_State_checkUnsigned"]
 opaque checkUnsigned (state : @& State Uu Ut Lt) (narg : Int32) : IO Unsigned
 
