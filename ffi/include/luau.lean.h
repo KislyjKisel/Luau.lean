@@ -60,12 +60,12 @@ LEAN_POD_DECLARE_EXTERNAL_CLASS(luau_CompileOptions, lean_luau_CompileOptions_da
 
 // Lean-side CompileOptions
 #define LEAN_LUAU_LAYOUT_CompileOptions 2, 0, 0, 0, 0
-#define LEAN_LUAU_CompileOptions_OPTLVL(v) LEAN_POD_CTOR_GET_U8(LEAN_LUAU_LAYOUT_CompileOptions, v, 0)
-#define LEAN_LUAU_CompileOptions_DBGLVL(v) LEAN_POD_CTOR_GET_U8(LEAN_LUAU_LAYOUT_CompileOptions, v, 1)
-#define LEAN_LUAU_CompileOptions_TYILVL(v) LEAN_POD_CTOR_GET_U8(LEAN_LUAU_LAYOUT_CompileOptions, v, 2)
-#define LEAN_LUAU_CompileOptions_COVLVL(v) LEAN_POD_CTOR_GET_U8(LEAN_LUAU_LAYOUT_CompileOptions, v, 3)
-#define LEAN_LUAU_CompileOptions_MUTGLB(v) LEAN_POD_CTOR_GET_BOX(LEAN_LUAU_LAYOUT_CompileOptions, v, 0)
-#define LEAN_LUAU_CompileOptions_USRTYS(v) LEAN_POD_CTOR_GET_BOX(LEAN_LUAU_LAYOUT_CompileOptions, v, 1)
+#define LEAN_LUAU_CompileOptions_OPTLVL(v) LEAN_POD_CTOR_GET(U8, v, 0, LEAN_LUAU_LAYOUT_CompileOptions)
+#define LEAN_LUAU_CompileOptions_DBGLVL(v) LEAN_POD_CTOR_GET(U8, v, 1, LEAN_LUAU_LAYOUT_CompileOptions)
+#define LEAN_LUAU_CompileOptions_TYILVL(v) LEAN_POD_CTOR_GET(U8, v, 2, LEAN_LUAU_LAYOUT_CompileOptions)
+#define LEAN_LUAU_CompileOptions_COVLVL(v) LEAN_POD_CTOR_GET(U8, v, 3, LEAN_LUAU_LAYOUT_CompileOptions)
+#define LEAN_LUAU_CompileOptions_MUTGLB(v) LEAN_POD_CTOR_GET(BOX, v, 0, LEAN_LUAU_LAYOUT_CompileOptions)
+#define LEAN_LUAU_CompileOptions_USRTYS(v) LEAN_POD_CTOR_GET(BOX, v, 1, LEAN_LUAU_LAYOUT_CompileOptions)
 
 typedef struct lua_State lua_State;
 
