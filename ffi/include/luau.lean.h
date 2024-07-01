@@ -59,13 +59,13 @@ typedef struct {
 LEAN_POD_DECLARE_EXTERNAL_CLASS(luau_CompileOptions, lean_luau_CompileOptions_data*)
 
 // Lean-side CompileOptions
-#define LEAN_LUAU_LAYOUT_CompileOptions 2, 0, 0, 0, 0
-#define LEAN_LUAU_CompileOptions_OPTLVL(v) LEAN_POD_CTOR_GET(U8, v, 0, LEAN_LUAU_LAYOUT_CompileOptions)
-#define LEAN_LUAU_CompileOptions_DBGLVL(v) LEAN_POD_CTOR_GET(U8, v, 1, LEAN_LUAU_LAYOUT_CompileOptions)
-#define LEAN_LUAU_CompileOptions_TYILVL(v) LEAN_POD_CTOR_GET(U8, v, 2, LEAN_LUAU_LAYOUT_CompileOptions)
-#define LEAN_LUAU_CompileOptions_COVLVL(v) LEAN_POD_CTOR_GET(U8, v, 3, LEAN_LUAU_LAYOUT_CompileOptions)
-#define LEAN_LUAU_CompileOptions_MUTGLB(v) LEAN_POD_CTOR_GET(BOX, v, 0, LEAN_LUAU_LAYOUT_CompileOptions)
-#define LEAN_LUAU_CompileOptions_USRTYS(v) LEAN_POD_CTOR_GET(BOX, v, 1, LEAN_LUAU_LAYOUT_CompileOptions)
+#define LEAN_LUAU_CompileOptions_LAYOUT 2, 0, 0, 0, 0
+#define LEAN_LUAU_CompileOptions_optimizationLevel U8, 0, LEAN_LUAU_CompileOptions_LAYOUT
+#define LEAN_LUAU_CompileOptions_debugLevel U8, 1, LEAN_LUAU_CompileOptions_LAYOUT
+#define LEAN_LUAU_CompileOptions_typeInfoLevel U8, 2, LEAN_LUAU_CompileOptions_LAYOUT
+#define LEAN_LUAU_CompileOptions_coverageLevel U8, 3, LEAN_LUAU_CompileOptions_LAYOUT
+#define LEAN_LUAU_CompileOptions_mutableGlobals BOX, 0, LEAN_LUAU_CompileOptions_LAYOUT
+#define LEAN_LUAU_CompileOptions_userdataTypes BOX, 1, LEAN_LUAU_CompileOptions_LAYOUT
 
 typedef struct lua_State lua_State;
 

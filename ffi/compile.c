@@ -5,12 +5,12 @@
 LEAN_EXPORT lean_luau_CompileOptions lean_luau_CompileOptions_bake(lean_obj_arg raw) {
     lean_luau_CompileOptions_data* data = lean_pod_alloc(sizeof(lean_luau_CompileOptions_data));
     data->owner = raw;
-    data->options.optimizationLevel = LEAN_LUAU_CompileOptions_OPTLVL(raw);
-    data->options.debugLevel = LEAN_LUAU_CompileOptions_DBGLVL(raw);
-    data->options.typeInfoLevel = LEAN_LUAU_CompileOptions_TYILVL(raw);
-    data->options.coverageLevel = LEAN_LUAU_CompileOptions_COVLVL(raw);
+    data->options.optimizationLevel = LEAN_POD_CTOR_GET(raw, LEAN_LUAU_CompileOptions_optimizationLevel);
+    data->options.debugLevel = LEAN_POD_CTOR_GET(raw, LEAN_LUAU_CompileOptions_debugLevel);
+    data->options.typeInfoLevel = LEAN_POD_CTOR_GET(raw, LEAN_LUAU_CompileOptions_typeInfoLevel);
+    data->options.coverageLevel = LEAN_POD_CTOR_GET(raw, LEAN_LUAU_CompileOptions_coverageLevel);
 
-    lean_object* mutableGlobals = LEAN_LUAU_CompileOptions_MUTGLB(raw);
+    lean_object* mutableGlobals = LEAN_POD_CTOR_GET(raw, LEAN_LUAU_CompileOptions_mutableGlobals);
     size_t mutableGlobalsCount = lean_array_size(mutableGlobals);
     const char** mutableGlobals_c = lean_pod_alloc((1 + mutableGlobalsCount) * sizeof(char*));
     for (size_t i = 0; i < mutableGlobalsCount; ++i) {
@@ -19,7 +19,7 @@ LEAN_EXPORT lean_luau_CompileOptions lean_luau_CompileOptions_bake(lean_obj_arg 
     mutableGlobals_c[mutableGlobalsCount] = NULL;
     data->options.mutableGlobals = (const char* const*)mutableGlobals_c;
 
-    lean_object* userdataTypes = LEAN_LUAU_CompileOptions_USRTYS(raw);
+    lean_object* userdataTypes = LEAN_POD_CTOR_GET(raw, LEAN_LUAU_CompileOptions_userdataTypes);
     size_t userdataTypesCount = lean_array_size(userdataTypes);
     const char** userdataTypes_c = lean_pod_alloc((1 + userdataTypesCount) * sizeof(char*));
     for (size_t i = 0; i < userdataTypesCount; ++i) {
