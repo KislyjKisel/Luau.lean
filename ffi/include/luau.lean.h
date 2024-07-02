@@ -59,7 +59,7 @@ typedef struct {
 LEAN_POD_DECLARE_EXTERNAL_CLASS(luau_CompileOptions, lean_luau_CompileOptions_data*)
 
 // Lean-side CompileOptions
-#define LEAN_LUAU_CompileOptions_LAYOUT 2, 0, 0, 0, 0, 4
+#define LEAN_LUAU_CompileOptions_LAYOUT 0, 2, 0, 0, 0, 0, 4
 #define LEAN_LUAU_CompileOptions_optimizationLevel U8, 0, LEAN_LUAU_CompileOptions_LAYOUT
 #define LEAN_LUAU_CompileOptions_debugLevel U8, 1, LEAN_LUAU_CompileOptions_LAYOUT
 #define LEAN_LUAU_CompileOptions_typeInfoLevel U8, 2, LEAN_LUAU_CompileOptions_LAYOUT
