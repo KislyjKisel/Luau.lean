@@ -272,7 +272,11 @@ LEAN_EXPORT lean_obj_res lean_luau_State_isLFunction(lean_luau_State state, uint
 LEAN_EXPORT lean_obj_res lean_luau_State_isUserdata(lean_luau_State state, uint32_t idx, lean_obj_arg io_) {
     lean_luau_State_data* data = lean_luau_State_fromRepr(state);
     lean_luau_guard_valid(data);
-    return lean_io_result_mk_ok(lean_box(lua_isuserdata(data->state, (int32_t)idx) != 0));
+    return lean_io_result_mk_ok(lean_box(
+        (lua_isuserdata(data->state, (int32_t)idx) != 0) &&
+        !(lua_islightuserdata(data->state, (int32_t)idx) != 0) &&
+        lua_userdatatag(data->state, (int32_t)idx) == (LUA_UTAG_LIMIT + 1)
+    ));
 }
 
 LEAN_EXPORT lean_obj_res lean_luau_State_isFunction(lean_luau_State state, uint32_t idx, lean_obj_arg io_) {

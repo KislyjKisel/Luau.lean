@@ -3,4 +3,3 @@ import Luau.Config
 import Luau.Compile
 import Luau.Core
 import Luau.Lib
-import Luau.Extras

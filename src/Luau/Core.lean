@@ -189,6 +189,7 @@ opaque isCFunction (state : @& State Uu Ut Lt) (idx : Int32) : IO Bool
 @[extern "lean_luau_State_isLFunction"]
 opaque isLFunction (state : @& State Uu Ut Lt) (idx : Int32) : IO Bool
 
+/-- Is userdata, not light and untagged. -/
 @[extern "lean_luau_State_isUserdata"]
 opaque isUserdata (state : @& State Uu Ut Lt) (idx : Int32) : IO Bool
 
@@ -311,7 +312,7 @@ opaque toUserdata (state : @& State Uu Ut Lt) (idx : Int32) : IO (Option Uu)
 @[extern "lean_luau_State_toUserdataTagged"]
 opaque toUserdataTagged (state : @& State Uu Ut Lt) (idx : Int32) (tag : Tag) : IO (Option (Ut tag))
 
-/-- Returns `-1` if the value is not userdata, and `utagLimit + 1` if the value is untagged userdata. -/
+/-- Returns `-1` if the value is not userdata, and `utagLimit` if the value is untagged userdata. -/
 @[extern "lean_luau_State_userdataTag"]
 opaque userdataTag (state : @& State Uu Ut Lt) (idx : Int32) : IO Int32
 

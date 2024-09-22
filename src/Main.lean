@@ -1,4 +1,5 @@
 import Luau
+import Luau.Extra
 
 open Luau
 
@@ -17,6 +18,7 @@ inductive Lt : Tag → Type where
 def source := "return 4 * 42.7"
 
 def main : IO Unit := do
+  IO.println <| ← Luau.evalPop (Uu := Uu) (Ut := Ut) (Lt := Lt) (α := Float) "return 3.14"
   let (.mk _ code) ← Luau.compile source <| .ofRaw {  }
   let state : Luau.State Uu Ut Lt ← Luau.State.new
   state.setInterruptCallback λ _ gc ↦
