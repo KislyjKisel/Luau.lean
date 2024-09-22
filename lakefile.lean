@@ -13,7 +13,7 @@ def optionLuauFlags := get_config? luau_flags |>.getD "" |> splitArgStr
 def optionLuauCCompiler := get_config? luau_cc |>.getD "cc"
 def optionLuauCppCompiler := get_config? luau_cxx |>.getD "clang++"
 
-require pod from git "https://github.com/KislyjKisel/lean-pod" @ "c2a774a"
+require pod from git "https://github.com/KislyjKisel/lean-pod" @ "66b36ed"
 
 package luau where
   srcDir := "src"
