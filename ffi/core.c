@@ -89,6 +89,9 @@ static void* lean_luau_alloc(void* ud, void* ptr, size_t osize, size_t nsize) {
 
 LEAN_EXPORT lean_obj_res lean_luau_State_new(lean_obj_arg io_) {
     lua_State* state = lua_newstate(lean_luau_alloc, NULL);
+    if (state == NULL) {
+        return lean_io_result_mk_error(lean_mk_io_user_error(lean_mk_string("Out of memory")));
+    }
     lean_object* state_obj = lean_luau_State_box(state, NULL);
     lua_callbacks(state)->userdata = state_obj;
     return lean_io_result_mk_ok(state_obj);
@@ -581,7 +584,7 @@ LEAN_EXPORT lean_obj_res lean_luau_State_pushString(lean_luau_State state, b_lea
 LEAN_EXPORT lean_obj_res lean_luau_State_pushBoolean(lean_luau_State state, uint8_t b, lean_obj_arg io_) {
     lean_luau_State_data* data = lean_luau_State_fromRepr(state);
     lean_luau_guard_valid(data);
-    lua_pushboolean(data->state, b != 0);
+    lua_pushboolean(data->state, b);
     return lean_io_result_mk_ok(lean_box(0));
 }
 
