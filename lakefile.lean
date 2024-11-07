@@ -20,9 +20,10 @@ package luau where
   leanOptions := #[⟨`autoImplicit, false⟩]
   precompileModules := true
 
+@[default_target]
 lean_lib Luau where
 
-@[default_target]
+@[test_driver]
 lean_exe «luau-test» where
   root := `Main
   moreLinkArgs :=
