@@ -1,10 +1,9 @@
 import Pod.Meta
-import Pod.Int
 import Pod.BytesView
 import Luau.Initialization
 import Luau.Config
 
-open Pod (Int32 BytesView)
+open Pod (BytesView)
 
 namespace Luau
 
@@ -84,14 +83,14 @@ inductive «Type» where
 deriving Repr, Inhabited, DecidableEq
 
 def «Type».toInt32 (ty : «Type») : Int32 :=
-  Pod.Int32.ofUInt32 $ UInt32.ofNat ty.toCtorIdx
+  Int32.ofNat ty.toCtorIdx
 
 -- TODO: GCObject(?) Type with extra values
 
 abbrev Number := Float
 abbrev Integer := Int32
 abbrev Unsigned := UInt32
-
+abbrev Atom := { x : UInt16 // x < ((1 : UInt16) <<< 15) }
 
 namespace State
 
@@ -280,7 +279,7 @@ opaque typeName (state : @& State Uu Ut Lt) (tp : «Type») : IO String
 def typeName' (state : State Uu Ut Lt) (tp : Int32) : IO String :=
   if tp == tNone
     then pure "no value"
-    else state.typeName (.ofNat tp.val.toNat)
+    else state.typeName (.ofNat tp.toNat)
 
 /--
 Returns `true` if the two values in acceptable indices `idx1` and `idx2` are equal,
@@ -351,7 +350,7 @@ The returned string ends with the first `'\0'` in the original body.
 @[extern "lean_luau_State_toString"]
 opaque toString (state : @& State Uu Ut Lt) (idx : Int32) : IO (Option String)
 
--- TODO: toStringAtom nameCallAtom
+-- TODO: toStringAtom (lua_tolstringatom?) nameCallAtom
 
 /--
 Returns the "length" of the value at the given acceptable index:
@@ -450,6 +449,10 @@ opaque pushLightUserdataTagged (state : @& State Uu Ut Lt) (tag : Tag) (p : Lt t
 
 @[extern "lean_luau_State_newUserdataTagged"]
 opaque newUserdataTagged (state : @& State Uu Ut Lt) (tag : Tag) (userdata : Ut tag) : IO Unit
+
+/-- Faster creation of tagged userdata with metatables registered with `setUserdataMetatable`. -/
+@[extern "lean_luau_State_newUserdataTaggedWithMetatable"]
+opaque newUserdataTaggedWithMetatable (state : @& State Uu Ut Lt) (tag : Tag) (userdata : Ut tag) : IO Unit
 
 @[extern "lean_luau_State_newUserdata"]
 opaque newUserdata (state : @& State Uu Ut Lt) (userdata : Uu) : IO Unit
@@ -769,6 +772,9 @@ opaque cloneFunction (state : @& State Uu Ut Lt) (idx : Int32) : IO Unit
 @[extern "lean_luau_State_clearTable"]
 opaque clearTable (state : @& State Uu Ut Lt) (idx : Int32) : IO Unit
 
+@[extern "lean_luau_State_cloneTable"]
+opaque cloneTable (state : @& State Uu Ut Lt) (idx : Int32) : IO Unit
+
 
 /-! # Reference system -/
 
@@ -803,4 +809,12 @@ opaque setPanicCallback (state : @& State Uu Ut Lt) (f : State Uu Ut Lt → Int3
 @[extern "lean_luau_State_resetPanicCallback"]
 opaque resetPanicCallback (state : @& State Uu Ut Lt) : IO Unit
 
--- TODO: userthread, useratom, debug callbacks
+-- TODO:
+-- @[extern "lean_luau_State_setUseratomCallback"]
+-- opaque setUseratomCallback (state : @& State Uu Ut Lt) (f : String → Option Atom) : IO Unit
+
+-- TODO:
+-- @[extern "lean_luau_State_resetUseratomCallback"]
+-- opaque resetUseratomCallback (state : @& State Uu Ut Lt) : IO Unit
+
+-- TODO: userthread, debug callbacks

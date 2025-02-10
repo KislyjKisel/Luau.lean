@@ -637,6 +637,17 @@ LEAN_EXPORT lean_obj_res lean_luau_State_newUserdataTagged(lean_luau_State state
     return lean_io_result_mk_ok(lean_box(0));
 }
 
+LEAN_EXPORT lean_obj_res lean_luau_State_newUserdataTaggedWithMetatable(lean_luau_State state, lean_obj_arg userdata, uint32_t tag, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    lean_luau_userdata_tagged* dst = lua_newuserdatataggedwithmetatable(data->state, sizeof(lean_luau_userdata_tagged), tag);
+    lua_setuserdatadtor(data->state, tag, lean_luau_userdata_tagged_dtor);
+    dst->obj = userdata;
+    dst->tag = tag;
+    dst->main = data->main;
+    return lean_io_result_mk_ok(lean_box(0));
+}
+
 LEAN_EXPORT lean_obj_res lean_luau_State_newUserdata(lean_luau_State state, lean_obj_arg userdata, lean_obj_arg io_) {
     lean_luau_State_data* data = lean_luau_State_fromRepr(state);
     lean_luau_guard_valid(data);
@@ -1089,6 +1100,13 @@ LEAN_EXPORT lean_obj_res lean_luau_State_clearTable(lean_luau_State state, uint3
     lean_luau_State_data* data = lean_luau_State_fromRepr(state);
     lean_luau_guard_valid(data);
     lua_cleartable(data->state, (int32_t)idx);
+    return lean_io_result_mk_ok(lean_box(0));
+}
+
+LEAN_EXPORT lean_obj_res lean_luau_State_cloneTable(lean_luau_State state, uint32_t idx, lean_obj_arg io_) {
+    lean_luau_State_data* data = lean_luau_State_fromRepr(state);
+    lean_luau_guard_valid(data);
+    lua_clonetable(data->state, (int32_t)idx);
     return lean_io_result_mk_ok(lean_box(0));
 }
 

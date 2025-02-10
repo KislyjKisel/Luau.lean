@@ -1,4 +1,4 @@
-[Luau](https://github.com/luau-lang/luau)
+[Luau](https://github.com/luau-lang/luau) 0.660
 
 # Options
 

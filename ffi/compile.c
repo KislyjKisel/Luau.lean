@@ -28,6 +28,18 @@ LEAN_EXPORT lean_luau_CompileOptions lean_luau_CompileOptions_bake(lean_obj_arg 
     userdataTypes_c[userdataTypesCount] = NULL;
     data->options.userdataTypes = (const char* const*)userdataTypes_c;
 
+    lean_object* disabledBuiltins = LEAN_POD_CTOR_GET(raw, LEAN_LUAU_CompileOptions_disabledBuiltins);
+    size_t disabledBuiltinsCount = lean_array_size(disabledBuiltins);
+    const char** disabledBuiltins_c = lean_pod_alloc((1 + disabledBuiltinsCount) * sizeof(char*));
+    for (size_t i = 0; i < disabledBuiltinsCount; ++i) {
+        disabledBuiltins_c[i] = lean_string_cstr(lean_array_get_core(disabledBuiltins, i));
+    }
+    disabledBuiltins_c[disabledBuiltinsCount] = NULL;
+    data->options.disabledBuiltins = (const char* const*)disabledBuiltins_c;
+
+    data->options.librariesWithKnownMembers = NULL;
+    data->options.libraryMemberTypeCb = NULL;
+    data->options.libraryMemberConstantCb = NULL;
     data->options.vectorCtor = NULL;
     data->options.vectorLib = NULL;
     data->options.vectorType = NULL;

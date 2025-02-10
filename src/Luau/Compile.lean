@@ -62,11 +62,13 @@ structure CompileOptions where -- Layout synchronized with FFI
   debugLevel : DebugLevel := default
   typeInfoLevel : TypeInfoLevel := default
   coverageLevel : CoverageLevel := default
-  /-- Array of globals that are mutable; disables the import optimization for fields accessed through these -/
+  /-- Array of globals that are mutable; disables the import optimization for fields accessed through these. -/
   mutableGlobals : Array String := #[]
-  /-- array of userdata types that will be included in the type information -/
+  /-- Array of userdata types that will be included in the type information. -/
   userdataTypes : Array String := #[]
-  -- TODO vectorLib vectorCtor vectorType (what is it?)
+  /-- Array of library functions that should not be compiled into a built-in fastcall ("name" "lib.name"). -/
+  disabledBuiltins : Array String := #[]
+  -- TODO librariesWithKnownMembers, vectorLib vectorCtor vectorType (what is it?)
 deriving Repr, Inhabited
 
 /-- Foreign memory blob created from `CompileOptions`. -/

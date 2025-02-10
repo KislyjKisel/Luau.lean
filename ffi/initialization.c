@@ -7,8 +7,9 @@ LEAN_POD_DEFINE_EXTERNAL_CLASS(luau_State)
 static void lean_luau_CompileOptions_finalize(void* data) {
     lean_luau_CompileOptions_data* data_ = data;
     lean_dec_ref(data_->owner);
-    lean_pod_free((char*)data_->options.mutableGlobals);
-    lean_pod_free((char*)data_->options.userdataTypes);
+    lean_pod_free((void**)data_->options.mutableGlobals);
+    lean_pod_free((void**)data_->options.userdataTypes);
+    lean_pod_free((void**)data_->options.disabledBuiltins);
     lean_pod_free(data);
 }
 

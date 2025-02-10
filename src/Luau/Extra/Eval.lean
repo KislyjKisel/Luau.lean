@@ -2,7 +2,7 @@ import Luau.Lib
 import Luau.Compile
 import Luau.Extra.FromTo
 
-open Pod (BytesView Int32)
+open Pod (BytesView)
 
 namespace Luau
 

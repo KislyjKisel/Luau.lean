@@ -1,7 +1,5 @@
 import Luau.Lib
 
-open Pod (Int32)
-
 namespace Luau
 
 variable {Uu : Type} {Ut Lt : Tag → Type}
@@ -80,7 +78,7 @@ instance : FromLua Uu Ut Lt Uu where
   read := State.toUserdata
 
 instance {tag} : FromLua Uu Ut Lt (Ut tag) where
-  is state idx := (· == Int32.ofUInt32 tag.val) <$> state.userdataTag idx
+  is state idx := (· == tag.val.toNat.toInt32) <$> state.userdataTag idx
   read state idx := state.toUserdataTagged idx tag
 
 instance {tag} : FromLua Uu Ut Lt (Lt tag) where

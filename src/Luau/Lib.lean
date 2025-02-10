@@ -1,7 +1,5 @@
 import Luau.Core
 
-open Pod (Int32)
-
 namespace Luau
 
 namespace State
