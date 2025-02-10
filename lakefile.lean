@@ -12,13 +12,14 @@ def optionCMake := get_config? cmake |>.getD "cmake"
 def optionLuauFlags := get_config? luau_flags |>.getD "" |> splitArgStr
 def optionLuauCCompiler := get_config? luau_cc |>.getD "cc"
 def optionLuauCppCompiler := get_config? luau_cxx |>.getD "clang++"
+def optionPrecompile := get_config? precompile |>.isSome
 
 require pod from git "https://github.com/KislyjKisel/lean-pod" @ "adfbcd4"
 
 package luau where
   srcDir := "src"
   leanOptions := #[⟨`autoImplicit, false⟩]
-  precompileModules := true
+  precompileModules := optionPrecompile
 
 @[default_target]
 lean_lib Luau where
